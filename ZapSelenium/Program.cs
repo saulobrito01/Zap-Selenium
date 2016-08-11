@@ -26,7 +26,7 @@ namespace ZapSelenium
     public static class ZapModal
     {
         static IWebDriver driver;
-        static string chromeDriverDirectory = "C:\\";
+        static string chromeDriverDirectory = @"C:\chromedriver_win32\";
         static string url = "http://www.zapimoveis.com.br/";
         static int waitTimeInSec = 60;
         static Actions actions;
@@ -45,9 +45,14 @@ namespace ZapSelenium
 
         public static void GetResults()
         {
-            Thread.Sleep(10000);
+            //Thread.Sleep(10000);
             //open modal
-            driver.FindElement(By.Id("btnQtdeLocalidadeHome"), waitTimeInSec).Click();
+
+            WaiElementByid("btnQtdeLocalidadeHome");
+            driver.FindElement(By.Id("btnQtdeLocalidadeHome")).Click();
+
+            //driver.FindElement(By.Id("btnQtdeLocalidadeHome"), waitTimeInSec).Click(); 
+
             Sleep1000();
 
             RecursiveDropdown(1);
@@ -114,12 +119,14 @@ namespace ZapSelenium
 
         public static bool IsElementDisplayedBySelector(string selector)
         {
+            WaiElementBycss(selector);   
             return driver.IsElementDisplayed(By.CssSelector(selector));
         }
 
         public static List<string> GetValuesBySelector(string selector)
         {
-            return driver.FindElements(By.CssSelector(selector), waitTimeInSec).Select(d => d.Text).ToList();
+            WaiElementBycss(selector);
+            return driver.FindElements(By.CssSelector(selector)).Select(d => d.Text).ToList();
         }
 
         public static string GetContainsScript(string value)
@@ -130,6 +137,7 @@ namespace ZapSelenium
 
         public static void CustomClickBySelector(string selector)
         {
+            WaiElementBycss(selector);
             CustomClick(driver.FindElement(By.CssSelector(selector), waitTimeInSec));
         }
 
@@ -138,8 +146,33 @@ namespace ZapSelenium
             actions.Click(element).Build().Perform();
         }
 
-    }
+        public static void WaiElementByid(String locator)
+        {
 
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(30));
+
+            wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.Id(locator)));
+
+        }
+
+        public static void WaiElementBycss(String locator)
+        {
+
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(30));
+
+            wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.CssSelector(locator)));
+
+        }
+
+        public static void WaiElementByxpath(String locator)
+        {
+
+            WebDriverWait wait = new WebDriverWait(driver, new TimeSpan(30));
+
+            wait.Until(ExpectedConditions.PresenceOfAllElementsLocatedBy(By.XPath(locator)));
+
+        }
+    }
 
     public static class WebDriverExtensions
     {
